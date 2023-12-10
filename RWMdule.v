@@ -25,7 +25,7 @@ module RWModule (input rd ,wr,A0,CS ,inout [7:0]D ,output reg[7:0]datatologic,re
           ICWs[icw3] = 1;
           icflag[icw3] = 0;
         end
-        else if(icflag[icw4 :icw1]==3'b100)begin
+      else if(icflag[icw4 :icw1]==4'b1000)begin
           datatologic = D;
           ICWs[icw4] = 1;
           icflag[icw4] = 0;
