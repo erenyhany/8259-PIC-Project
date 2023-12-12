@@ -1,6 +1,6 @@
 module ControlLogic(input A0, wire INTA,wire intreq,
   wire[4:1] ICWs, wire [4:1]OCWs,
- wire [7:0]datain ,output INT ,impulse1,impulse2,endOfImpulse2,
+ wire [7:0]datain ,output impulse1,impulse2,reg endOfImpulse2,reg INT ,
 reg AEOI,reg [4:0]beginOfvectorAdress ,reg [7:0]maskreg,
 reg[2:0]RR_RIS,reg [2:0]R_SL_EOI);
 
@@ -8,10 +8,10 @@ reg[2:0]RR_RIS,reg [2:0]R_SL_EOI);
     localparam icw1 = 1 , icw2 = 2 ,icw3=3 , icw4=4 ,ocw1=1,ocw2=2,ocw3=3;
     reg[7:0] ICW1word,ICW2word,ICW3word,ICW4word;
     reg[7:0] OCW1word,OCW2word,OCW3word;
-    assign INT = intreq;
-
-
-    reg counter [2:1];
+    always @(intreq)begin
+        INT = intreq;
+    end
+    reg [2:1]counter ;
     always@(INT)begin 
         if(INT == 1)begin
          counter = 0;
