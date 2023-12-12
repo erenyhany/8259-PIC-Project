@@ -1,8 +1,8 @@
 module RWModule (input rd ,wr,A0,cs,[7:0]isr ,irr,imr ,inout [7:0]D ,output  reg[7:0]datatologic,reg[4:1]ICWs,reg[3:1]OCWs);
-  reg [2:0]icwCounter=0;
+
   reg[7:0] txtocpu ,rxfromcpu; 
 
-  parameter icw1 = 1 , icw2 = 2 ,icw3=3 , icw4=4 ,ocw1=1,ocw2=2,ocw3=3;
+  localparam icw1 = 1 , icw2 = 2 ,icw3=3 , icw4=4 ,ocw1=1,ocw2=2,ocw3=3;
   reg [4:1]icflag= 4'b1111;
   always@(wr or cs)begin
     
@@ -71,7 +71,8 @@ module RWModule (input rd ,wr,A0,cs,[7:0]isr ,irr,imr ,inout [7:0]D ,output  reg
   always@(imr)begin
     txtocpu = imr;
   end
+
+  
   
   endmodule
-
 
