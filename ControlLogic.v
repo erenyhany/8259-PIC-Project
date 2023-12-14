@@ -2,7 +2,7 @@ module ControlLogic(input A0, wire INTA,wire intreq,
   wire[4:1] ICWs, wire [4:1]OCWs,
  wire [7:0]datain ,output impulse1,impulse2,reg endOfImpulse2,reg INT ,
 reg AEOI,reg [4:0]beginOfvectorAdress ,reg [7:0]maskreg,
-reg[2:0]RR_RIS,reg [2:0]R_SL_EOI);
+reg[2:0]RR_RIS,reg [2:0]R_SL_EOI,reg OCW2isSent);
 
 
     localparam icw1 = 1 , icw2 = 2 ,icw3=3 , icw4=4 ,ocw1=1,ocw2=2,ocw3=3;
@@ -60,6 +60,7 @@ reg[2:0]RR_RIS,reg [2:0]R_SL_EOI);
         endcase
      end
     always @(OCWs) begin
+        OCW2isSent=0;
         case(OCWs)
         3'b001 : begin OCW1word = datain;
                     maskreg = OCW1word;
@@ -68,6 +69,7 @@ reg[2:0]RR_RIS,reg [2:0]R_SL_EOI);
         3'b010 : begin OCW2word = datain;
                         R_SL_EOI=0;
                         R_SL_EOI = OCW2word[7:5];
+                        OCW2isSent=1;
                 end
         3'b100 : begin OCW3word = datain;
                     RR_RIS = OCW3word[1:0];
