@@ -1,9 +1,10 @@
 
 module PR(
-    input endOfinit,
-    input wire [7:0] irr, //CPU haysafar fiha lw el interupt et3amal ????11!!!!!!!!!!!!!!!!!!
+    input endOfinit,A0,read,
+    input wire [7:0] irr, 
     input wire [7:0] IMR, // Interrupt Mask Register (OCW1)
     input wire [7:5] OCW2, // Operation Command Word 2 (7 auto)(5 manual) 
+    input wire [1:0] RR_RIS,
     input imp1,
     input imp2,
     input endOfimp2,
@@ -11,13 +12,14 @@ module PR(
     input ICW4, //ICW4[1] 
     input wire [7:3] vector,
     output reg [7:0] datavector, 
-    output reg INT
+    output reg INT,
+    output reg [7:0]isrOrirrOrimrToRWModule 
    
     //level,cascade modes
 );
     reg [7:0] ISR; 
     reg [7:0] IRR;
-    reg myflag =0 ; 
+    reg myflag  ; 
 
     // Priority modes based on rotate bit (R) and select-level bit (SL) in OCW2
     localparam AUTOMATIC_ROTATING_MODE = 1;
@@ -28,6 +30,7 @@ module PR(
 
     // register to store the highest priority interrupt in case of rotating priority mode
     reg[7:0] priority_counter = 8'b00000001; 
+    reg [3:0] iterator ; 
     // reg[2:0] priority_counter ='b000;
     reg [2:0]index=0;
 
@@ -40,33 +43,43 @@ module PR(
 
     // set the In-Service Register and reset Interrupt Request Register when the interrupt is acknowledged 
     
-    always @(posedge imp1 or posedge myflag  or negedge myflag) begin
+    always @(posedge imp1) begin
         // choose the highest priority based on the priority mode
         if(endOfinit == 1)begin
-        if(priority_counter ==0 )priority_counter =1 ; 
+         
           
         if(OCW2[7] == AUTOMATIC_ROTATING_MODE) begin 
+          myflag = 0;
             
-            if((IRR & priority_counter) != 0 )begin 
-              ISR = IRR & priority_counter;
-              IRR = IRR & ~ISR;
+
+          for (iterator= 0 ;iterator<8 ; iterator = iterator +1)begin
+            if(priority_counter ==0 )priority_counter =1 ;
+
+            if(myflag == 0)begin
+              if((IRR & priority_counter) != 0 )begin 
+                ISR = IRR & priority_counter;
+                IRR = IRR & ~ISR;
+                priority_counter = priority_counter<<1;
+                myflag = 1 ;
+                case(ISR)
+                  8'b00000001 : index = 0;
+                  8'b00000010 : index = 1;
+                  8'b00000100 : index = 2;
+                  8'b00001000 : index = 3;
+                  8'b00010000 : index = 4;
+                  8'b00100000 : index = 5;
+                  8'b01000000 : index = 6;
+                  8'b10000000 : index = 7;
+                  default : ;
+                endcase
+              end
+            else begin 
               priority_counter = priority_counter<<1;
-              case(ISR)
-                8'b00000001 : index = 0;
-                8'b00000010 : index = 1;
-                8'b00000100 : index = 2;
-                8'b00001000 : index = 3;
-                8'b00010000 : index = 4;
-                8'b00100000 : index = 5;
-                8'b01000000 : index = 6;
-                8'b10000000 : index = 7;
-                default : ;
-              endcase
+            
+              end
             end
-          else begin 
-            priority_counter = priority_counter<<1;
-            myflag = myflag + 1;
-          end
+           end
+
             
         end
 
@@ -192,8 +205,21 @@ module PR(
 
     end
     
-   // assign irr=IRR;
-  
+    always @(read)begin
+      if(read == 1)begin
+        if(A0==1)begin
+          isrOrirrOrimrToRWModule = IMR;
+        end
+        else begin
+          case(RR_RIS)
+            2'b10:  isrOrirrOrimrToRWModule = IRR; 
+            2'b11:  isrOrirrOrimrToRWModule = ISR; 
+            default:;
+          endcase
+         end
+      end
+     end
+       
 endmodule
 
 
