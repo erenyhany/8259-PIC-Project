@@ -84,3 +84,8 @@ reg[2:0]RR_RIS,reg [2:0]R_SL_EOI,reg OCW2isSent);
 
     
 endmodule
+
+
+
+
+//ne3mel mawdou3 enena nesafar el mask by default
