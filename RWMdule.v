@@ -1,6 +1,8 @@
-module RWModule (input rd ,wr,A0,cs,[7:0]isr ,irr,imr ,inout [7:0]D ,output  reg[7:0]datatologic,reg[4:1]ICWs,reg[3:1]OCWs ,wire endOfInitialization);
+module RWModule (input rd ,wr,A0,cs,[7:0]isrOrirrOrimr  ,inout [7:0]D ,output wire read, reg[7:0]datatologic,reg[4:1]ICWs,reg[3:1]OCWs ,wire endOfInitialization);
 
   reg[7:0] txtocpu ,rxfromcpu; 
+
+  assign read = ~rd & ~cs;
 
   localparam icw1 = 1 , icw2 = 2 ,icw3=3 , icw4=4 ,ocw1=1,ocw2=2,ocw3=3;
   reg [4:1]icflag= 4'b1111;
@@ -65,16 +67,13 @@ module RWModule (input rd ,wr,A0,cs,[7:0]isr ,irr,imr ,inout [7:0]D ,output  reg
 
 assign endOfInitialization = (icflag==0)? 1:0;
   //write to cpu :
-  assign D = (~rd && ~cs )?txtocpu:8'bZ;
-  always @ (isr)begin
-    txtocpu <=isr;
+  assign D = txtocpu;
+  
+
+  always @ (isrOrirrOrimr)begin
+    txtocpu <=isrOrirrOrimr;
   end 
-  always @(irr)begin
-    txtocpu = irr;
-  end
-  always@(imr)begin
-    txtocpu = imr;
-  end
+
 
   
   
