@@ -12,9 +12,8 @@ module PR(
     input OCW2Sent,
     input ICW4, //ICW4[1] 
     input wire [7:3] vector,
-    output reg [7:0] datavector, 
     output reg INT,
-    output reg [7:0]isrOrirrOrimrToRWModule ,
+    output reg [7:0]isrOrirrOrimrToRWModuleOrdatavector ,
     inout [2:0] CAS, //cascading lines
     input en, //single enable, master=1,slave=0
     input SNGL, //ICW1[1]
@@ -23,6 +22,7 @@ module PR(
    
     //level,cascade modes
 );
+    reg [7:0] datavector;
     reg [7:0] ISR; 
     reg [7:0] IRR;
     reg myflag  ; 
@@ -133,7 +133,6 @@ module PR(
                 IRR[7] = 0;
                 index=7;
             end
-            CAS=index;
         end
       end
           
@@ -176,7 +175,6 @@ module PR(
                   8'b10000000 : index = 7;
                   default : ;
                 endcase
-                CAS=index;
               end
             else begin 
               priority_counter = priority_counter<<1;
@@ -283,16 +281,21 @@ end
     always @(read)begin
       if(read == 1)begin
         if(A0==1)begin
-          isrOrirrOrimrToRWModule = IMR;
+          isrOrirrOrimrToRWModuleOrdatavector = IMR;
         end
         else begin
           case(RR_RIS)
-            2'b10:  isrOrirrOrimrToRWModule = IRR; 
-            2'b11:  isrOrirrOrimrToRWModule = ISR; 
+            2'b10:  isrOrirrOrimrToRWModuleOrdatavector = IRR; 
+            2'b11:  isrOrirrOrimrToRWModuleOrdatavector = ISR; 
             default:;
           endcase
          end
       end
+     end
+
+    assign CAS = index;
+    always @(datavector)begin
+      isrOrirrOrimrToRWModuleOrdatavector = datavector;
      end
        
 endmodule
@@ -300,4 +303,3 @@ endmodule
 
 
 //level w edge trigg mode
-
