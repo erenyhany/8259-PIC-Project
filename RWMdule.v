@@ -62,6 +62,9 @@ module RWModule (input rd ,wr,A0,cs,[7:0]isrOrirrOrimr  ,input [7:0]Din ,output 
          end
       end
     end
+    else begin 
+      OCWs =0;
+    end
     
     
   end
