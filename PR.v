@@ -12,9 +12,9 @@ module PR(
     input OCW2Sent,
     input ICW4, //ICW4[1] 
     input wire [7:3] vector,
-    output reg INT,
+    output wire INT,
     output reg [7:0]isrOrirrOrimrToRWModuleOrdatavector ,
-    inout [2:0] CAS, //cascading lines
+    input [2:0] CASin,output [2:0] CASout ,//cascading lines
     input en, //single enable, master=1,slave=0
     input SNGL, //ICW1[1]
     input [7:0]ICW3 //cascading lines
@@ -39,19 +39,19 @@ module PR(
     // reg[2:0] priority_counter ='b000;
     reg [2:0]index=0;
 
-    
+    assign INT = (IRR != 0)?1:0;
     // set the interrupt line to 1 if there is an interrupt request that is not masked
     always @(irr or IMR or endOfinit ) begin
       if(endOfinit ==1)begin
         IRR = (irr & ~IMR) |IRR ;
-        if (IRR != 0)  INT = 1;
-        else INT = 0;
+        // if (IRR != 0)  INT = 1;
+        // else INT = 0;
       end
     end
     
     always @(posedge endOfimp1)
     begin
-      if((SNGL==0 && en==0 && (CAS==ICW3[2:0])))
+      if((SNGL==0 && en==0 && (CASin==ICW3[2:0])))
         begin
            if(endOfinit == 1)begin
          
@@ -241,13 +241,13 @@ module PR(
     
     always @(posedge imp2)
     begin
-        if((SNGL==1) || (SNGL==0 && en==0 && (CAS==ICW3[2:0])))
+        if((SNGL==1) || (SNGL==0 && en==0 && (CASin==ICW3[2:0])))
       datavector={vector,index};
     end
      
     always@(posedge endOfimp2) 
     begin
-       if((SNGL==1) || (SNGL==0 && en==1) || (SNGL==0 && en==0 && (CAS==ICW3[2:0])))
+       if((SNGL==1) || (SNGL==0 && en==1) || (SNGL==0 && en==0 && (CASin==ICW3[2:0])))
          begin
       if(ICW4==AUTO_EOI)
       begin
@@ -255,9 +255,10 @@ module PR(
       end 
     end
     end
+
      reg counter=0;
     always@(OCW2Sent)
-    begin                       //hane3teber en el cpu haissafar w ye3melha tani le8aiet ma nes2al
+    begin                 
       if(ICW4!=AUTO_EOI && OCW2Sent==1 && OCW2[5]==1) 
         begin
              if(SNGL==1)
@@ -266,7 +267,7 @@ module PR(
          else if((SNGL==0 && en==1))
               //lw ana msh single w master: ISR[index]=0; 
            ISR[index]=0;
-         else if((SNGL==0 && en==0 && (CAS==ICW3[2:0])))
+         else if((SNGL==0 && en==0 && (CASin==ICW3[2:0])))
             //lw ana msh signle w slave, hshof el counter, lw equal 0 h3ml +1, lw equal 1: ISR[index]=0; w counter =0
            begin
              if(counter==0)
@@ -277,7 +278,7 @@ module PR(
                   counter=0;
                end
            end
-end
+      end
     end
     
     always @(read)begin
@@ -295,7 +296,8 @@ end
       end
      end
 
-    assign CAS = index;
+    assign CASout =(en ==1)?index:'bzzz;
+
     always @(datavector)begin
       isrOrirrOrimrToRWModuleOrdatavector = datavector;
      end
@@ -304,3 +306,4 @@ endmodule
 
 
 
+//level w edge trigg mode
