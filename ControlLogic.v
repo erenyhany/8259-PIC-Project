@@ -20,9 +20,9 @@ reg[1:0]RR_RIS,reg [2:0]R_SL_EOI,reg OCW2isSent ,output reg endOfimp1,
     end 
     always @ (INTA) begin
         if(~INTA)begin
-        INT=0;
-        if(counter ==0) begin counter=1; endOfImpulse2=0;end
-        else begin
+        // INT=0;
+        if(counter ==2 || counter == 0) begin counter=1; endOfImpulse2=0;end
+        else begin 
             counter = counter<<1;
         end
         end
@@ -91,10 +91,9 @@ reg[1:0]RR_RIS,reg [2:0]R_SL_EOI,reg OCW2isSent ,output reg endOfimp1,
 
 
 
+
     
 endmodule
 
 
 
-
-//ne3mel mawdou3 enena nesafar el mask by default
