@@ -20,11 +20,10 @@ module PR(
     input [7:0]ICW3 //cascading lines
     
    
-    //level,cascade modes
 );
     reg [7:0] datavector;
     reg [7:0] ISR; 
-    reg [7:0] IRR;
+    reg [7:0] IRR=0;
     reg myflag  ; 
 
     // Priority modes based on rotate bit (R) and select-level bit (SL) in OCW2
@@ -40,11 +39,14 @@ module PR(
     // reg[2:0] priority_counter ='b000;
     reg [2:0]index=0;
 
+    
     // set the interrupt line to 1 if there is an interrupt request that is not masked
-    always @(irr or IMR or endOfinit) begin
-        IRR = irr & ~IMR ;
-        if (IRR != 0 && endOfinit==1 )  INT = 1;
+    always @(irr or IMR or endOfinit ) begin
+      if(endOfinit ==1)begin
+        IRR = (irr & ~IMR) |IRR ;
+        if (IRR != 0)  INT = 1;
         else INT = 0;
+      end
     end
     
     always @(posedge endOfimp1)
@@ -302,4 +304,3 @@ endmodule
 
 
 
-//level w edge trigg mode
