@@ -1,8 +1,8 @@
 module ControlLogic(input A0, wire INTA,wire intreq,
-  wire[4:1] ICWs, wire [4:1]OCWs,
+  wire[4:1] ICWs, wire [3:1]OCWs,
  wire [7:0]datain ,output impulse1,impulse2,reg endOfImpulse2,reg INT ,
 reg AEOI,reg [4:0]beginOfvectorAdress ,reg [7:0]maskreg,
-reg[2:0]RR_RIS,reg [2:0]R_SL_EOI,reg OCW2isSent ,output reg endOfimp1,
+reg[1:0]RR_RIS,reg [2:0]R_SL_EOI,reg OCW2isSent ,output reg endOfimp1,
  reg SNGL,output reg[7:0]ICW3word );
 
 
