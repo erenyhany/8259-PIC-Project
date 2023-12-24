@@ -16,7 +16,7 @@ module PR(
     output reg [7:0]isrOrirrOrimrToRWModuleOrdatavector ,
     input [2:0] CASin,output [2:0] CASout ,//cascading lines
     input en, //single enable, master=1,slave=0
-    input SNGL, //ICW1[1]
+    input SNGL,LTIM, //ICW1[1]
     input [7:0]ICW3 //cascading lines
     
    
@@ -41,14 +41,55 @@ module PR(
 
     assign INT = (IRR != 0)?1:0;
     // set the interrupt line to 1 if there is an interrupt request that is not masked
-    always @(irr or IMR or endOfinit ) begin
-      if(endOfinit ==1)begin
+    always @(irr) begin
+      if(endOfinit ==1 &&  LTIM==1 )begin
         IRR = (irr & ~IMR) |IRR ;
-        // if (IRR != 0)  INT = 1;
-        // else INT = 0;
       end
     end
-    
+    //for edge trigger
+    always @(posedge irr[0]) begin
+      if(endOfinit ==1 &&  LTIM==0 )begin
+        IRR[0] =  ~IMR[0] ;
+      end
+    end
+        always @(posedge irr[1]) begin
+      if(endOfinit ==1 &&  LTIM==0 )begin
+        IRR[1] =  ~IMR[1] ;
+      end
+    end
+      always @(posedge irr[2]) begin
+      if(endOfinit ==1 &&  LTIM==0 )begin
+        IRR[2] =  ~IMR[2] ;
+      end
+    end    
+      always @(posedge irr[3]) begin
+      if(endOfinit ==1 &&  LTIM==0 )begin
+        IRR[3] =  ~IMR[3] ;
+      end
+    end
+    always @(posedge irr[4]) begin
+      if(endOfinit ==1 &&  LTIM==0 )begin
+        IRR[4] =  ~IMR[4] ;
+      end
+    end
+        always @(posedge irr[5]) begin
+      if(endOfinit ==1 &&  LTIM==0 )begin
+        IRR[5] =  ~IMR[5] ;
+      end
+    end
+        always @(posedge irr[6]) begin
+      if(endOfinit ==1 &&  LTIM==0 )begin
+        IRR[6] =  ~IMR[6] ;
+      end
+    end
+        always @(posedge irr[7]) begin
+      if(endOfinit ==1 &&  LTIM==0 )begin
+        IRR[7] =  ~IMR[7] ;
+      end
+    end
+
+
+
     always @(posedge endOfimp1)
     begin
       if((SNGL==0 && en==0 && (CASin==ICW3[2:0])))
@@ -306,4 +347,3 @@ endmodule
 
 
 
-//level w edge trigg mode
