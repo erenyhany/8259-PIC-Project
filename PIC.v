@@ -24,12 +24,18 @@ module PIC(/*inout [7:0]Dpic ,***********/input [2:0]casInpic,output [2:0]casOut
                     datafromRWToControl, imp1pic,imp2pic,endOfimp2pic,INTpic,
                     AEOIpic,beginOfvectorAdresspic,maskPic,
                     RR_RISpic,R_SL_EOIpic,OCW2isSentpic,endOfimp1pic,
-                    SNGLpic,ICW3wordpic);
+                    SNGLpic,LTIM,ICW3wordpic);
 
     PR PRinst (endOfinitPic,A0pic,Readd,
                 irrpic,maskPic,R_SL_EOIpic,
                 RR_RISpic,imp1pic,imp2pic,endOfimp2pic,endOfimp1pic,
                 OCW2isSentpic,AEOIpic,beginOfvectorAdresspic,intreqFromPrToControl,
-                datafromPrToRW,casInpic,casOutpic,Enpic,SNGLpic,ICW3wordpic);
+                datafromPrToRW,casInpic,casOutpic,Enpic,SNGLpic,LTIM,ICW3wordpic);
     
+endmodule
+
+
+//    PIC master(mcasin ,mcasout,Datain,rd ,wr,A0,mcs,mEn,INTA,mirr,mINT,DataOut);
+//    PIC slave(scasin ,scasout,Datain,rd ,wr,A0,scs,sEn,INTA,sirr,sINT,DataOut);
+
 endmodule
