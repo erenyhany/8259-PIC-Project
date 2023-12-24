@@ -33,9 +33,3 @@ module PIC(/*inout [7:0]Dpic ,***********/input [2:0]casInpic,output [2:0]casOut
                 datafromPrToRW,casInpic,casOutpic,Enpic,SNGLpic,LTIM,ICW3wordpic);
     
 endmodule
-
-
-//    PIC master(mcasin ,mcasout,Datain,rd ,wr,A0,mcs,mEn,INTA,mirr,mINT,DataOut);
-//    PIC slave(scasin ,scasout,Datain,rd ,wr,A0,scs,sEn,INTA,sirr,sINT,DataOut);
-
-endmodule
