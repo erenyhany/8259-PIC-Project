@@ -1,11 +1,11 @@
 module ControlLogic(input A0, wire INTA,wire intreq,
   wire[4:1] ICWs, wire [3:1]OCWs,
  wire [7:0]datain ,output impulse1,impulse2,reg endOfImpulse2,reg INT ,
-reg AEOI,reg [4:0]beginOfvectorAdress ,reg [7:0]maskreg,
+reg AEOI,reg [4:0]beginOfvectorAdress ,reg [7:0]maskreg=0,
 reg[1:0]RR_RIS,reg [2:0]R_SL_EOI,reg OCW2isSent ,output reg endOfimp1,
- reg SNGL,output reg[7:0]ICW3word );
+ reg SNGL,LTIM,output reg[7:0]ICW3word );
 
-
+    // maskreg = 0;
     localparam icw1 = 1 , icw2 = 2 ,icw3=3 , icw4=4 ,ocw1=1,ocw2=2,ocw3=3;
     reg[7:0] ICW1word,ICW2word,ICW4word;
     reg[7:0] OCW1word,OCW2word,OCW3word;
@@ -51,6 +51,7 @@ reg[1:0]RR_RIS,reg [2:0]R_SL_EOI,reg OCW2isSent ,output reg endOfimp1,
         4'b0001 :begin 
             ICW1word = datain;
             SNGL = ICW1word[1];
+            LTIM = ICW1word[3];
             if(ICW1word[0] ==0)begin
                 AEOI = 0;
                 end
