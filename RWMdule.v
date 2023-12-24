@@ -1,4 +1,4 @@
-module RWModule (input rd ,wr,A0,cs,[7:0]isrOrirrOrimr  ,input [7:0]Din ,output [7:0]Dout,
+module RWModule (input rd ,wr,A0,cs,[7:0]isrOrirrOrimr  ,inout[7:0]D,
                 output wire read, reg[7:0]datatologic,
               reg[4:1]ICWs,reg[3:1]OCWs ,wire endOfInitialization);
 
@@ -12,7 +12,7 @@ module RWModule (input rd ,wr,A0,cs,[7:0]isrOrirrOrimr  ,input [7:0]Din ,output 
   always@(wr or cs)begin
     
     if(~wr && ~cs)begin
-      rxfromcpu = Din;     //ehtemal tehtag always lwahdaha
+      rxfromcpu = D;     //ehtemal tehtag always lwahdaha
       OCWs = 0;
       ICWs = 0;
     if(icflag != 0 )begin
@@ -50,12 +50,12 @@ module RWModule (input rd ,wr,A0,cs,[7:0]isrOrirrOrimr  ,input [7:0]Din ,output 
           OCWs[ocw1] = 1;
           datatologic = rxfromcpu;
          end
-         else if(A0 ==0 && Din[4:3]==0)begin
+         else if(A0 ==0 && rxfromcpu[4:3]==0)begin
           //ocw2
           OCWs[ocw2] = 1;
           datatologic =  rxfromcpu;
          end
-         else if(A0 ==0 && Din[4:3]==2'b01 &&Din[7]==0)begin
+         else if(A0 ==0 && rxfromcpu[4:3]==2'b01 &&rxfromcpu[7]==0)begin
           //ocw3
           OCWs[ocw3] = 1;
           datatologic = rxfromcpu;
@@ -72,7 +72,7 @@ module RWModule (input rd ,wr,A0,cs,[7:0]isrOrirrOrimr  ,input [7:0]Din ,output 
 
 assign endOfInitialization = (icflag==0)? 1:0;
   //write to cpu :
-  assign Dout = txtocpu;
+  assign D = (wr !=0)?txtocpu:'bzzzzzzzz;
   
 
   always @ (isrOrirrOrimr)begin
