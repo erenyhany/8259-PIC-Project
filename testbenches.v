@@ -29,7 +29,7 @@ module testbench1();
         // sendtopiccc = 'b10;
         
         #100//send icw1 (no icw3 bas fih icw4 )
-        $display("\nsend icw1 with level sensing mode &single mode:");
+        $display("\nsend icw1 with level trigger mode &single mode:");
         DataTopic <= 'b0000011011;
         wr<=0 ;
         cs <=0;
@@ -116,7 +116,7 @@ module testbench1();
         $display("\nsend read signal with A0 = 0 & RR_RIS = 10 .so it will send the irr to the cpu after sending impulse1 and updating inner irr reg : ");
          cs <=0;
          rd<=0;
-
+   
          #100
          cs <=1;
          rd<=1;
@@ -195,8 +195,8 @@ module testbench2();
         rd <=1;
         
         #100//send icw1 (no icw3 bas fih icw4 )
-        $display("\nsend icw1 with level sensing mode &single mode:");
-        DataTopic <= 'b0000011010;
+        $display("\nsend icw1 with edge trigger mode &single mode:");
+        DataTopic <= 'b0000010010;
         wr<=0 ;
         cs <=0;
         A0 <=0;
