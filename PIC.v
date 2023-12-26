@@ -1,4 +1,4 @@
-module PIC(/*inout [7:0]Dpic ,***********/input [2:0]casInpic,output [2:0]casOutpic ,inout [7:0]D , input RDpic,WRpic,A0pic,CSpic,Enpic,INTApic,[7:0]irrpic  ,output INTpic );
+module PIC(/*inout [7:0]Dpic ,***********/inout [2:0]caspic, inout [7:0]D , input RDpic,WRpic,A0pic,CSpic,Enpic,INTApic,[7:0]irrpic  ,output INTpic );
 
     wire [7:0]datafromPrToRW ;
     wire Readd,endOfinitPic, intreqFromPrToControl;
@@ -30,6 +30,6 @@ module PIC(/*inout [7:0]Dpic ,***********/input [2:0]casInpic,output [2:0]casOut
                 irrpic,maskPic,R_SL_EOIpic,
                 RR_RISpic,imp1pic,imp2pic,endOfimp2pic,endOfimp1pic,
                 OCW2isSentpic,AEOIpic,beginOfvectorAdresspic,intreqFromPrToControl,
-                datafromPrToRW,casInpic,casOutpic,Enpic,SNGLpic,LTIM,ICW3wordpic);
+                datafromPrToRW,caspic,Enpic,SNGLpic,LTIM,ICW3wordpic);
     
 endmodule
