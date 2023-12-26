@@ -14,7 +14,7 @@ module PR(
     input wire [7:3] vector,
     output wire INT,
     output reg [7:0]isrOrirrOrimrToRWModuleOrdatavector ,
-    input [2:0] CASin,output [2:0] CASout ,//cascading lines
+    inout [2:0] CAS,//cascading lines
     input en, //single enable, master=1,slave=0
     input SNGL,LTIM, //ICW1[1]
     input [7:0]ICW3 //cascading lines
@@ -25,6 +25,8 @@ module PR(
     reg [7:0] ISR; 
     reg [7:0] IRR=0;
     reg myflag  ; 
+    reg [2:0]CASin;
+    reg [2:0]CASout;
 
     // Priority modes based on rotate bit (R) and select-level bit (SL) in OCW2
     localparam AUTOMATIC_ROTATING_MODE = 1;
@@ -284,6 +286,8 @@ module PR(
     begin
         if((SNGL==1) || (SNGL==0 && en==0 && (CASin==ICW3[2:0])))
       datavector={vector,index};
+
+      else datavector='bzzzzzzzz;
     end
      
     always@(posedge endOfimp2) 
@@ -337,13 +341,24 @@ module PR(
       end
      end
 
-    assign CASout =(en ==1)?index:'bzzz;
+    always@(index) begin 
+      if(en ==1)begin
+      CASout =index;
+      end
+    end
+    
+    assign CAS = (en==1)?CASout:'bzzz;
+
+    always @(CAS)begin 
+      if(en==0)
+      CASin = CAS;
+    end
 
     always @(datavector)begin
+      //if((SNGL==1) || (SNGL==0 && en==0 && (CASin==ICW3[2:0])))
       isrOrirrOrimrToRWModuleOrdatavector = datavector;
      end
        
 endmodule
-
 
 
