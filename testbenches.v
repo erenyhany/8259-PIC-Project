@@ -162,7 +162,7 @@ module testbench1();
          
      end
    
-   PIC pic1(,,DataWire,rd ,wr,A0,cs,En,INTA,irr,INT);
+   PIC pic1(,DataWire,rd ,wr,A0,cs,En,INTA,irr,INT);
 
  
 endmodule
@@ -339,6 +339,188 @@ module testbench2();
          DataTopic <= 'b10100000;
    end
 
-   PIC pic2(,,DataWire,rd ,wr,A0,cs,En,INTA,irr,INT);
+   PIC pic2(,DataWire,rd ,wr,A0,cs,En,INTA,irr,INT);
+
+endmodule
+
+
+/*
+   #################################################################################
+   TEST 3: Cascading: icw1(casc , no icw3 ,icw4) , auto  ,fully nested
+   ###################################################################################
+   */
+
+module testbench3();
+  
+  reg [7:0] Datain,mirr,sirr;
+  reg rd ,wr,A0,mcs,scs,mEn,sEn,INTA;
+  wire mINT,sINT;
+  wire[7:0]DataWire;
+
+  assign DataWire = (wr ==0 && (mcs ==0 || scs==0))? Datain : 'bzzzzzzzz;
+
+  wire[2:0] CASC;
+
+
+  initial begin
+        $monitor("INOUT: DataWire:%b\nINPUT:    DataIn:%b ,SLAVEirr:%b,   MASTERirr:%b \n  rd:%b,  wr:%b ,  scs:%b,  mcs:%b, A0:%b \nOUTPUT:    DataOut:%b ,   slaveINT:%b,    masterINT:%b\nCascadingLines:%b \n",DataWire,Datain,sirr,mirr,rd, wr,scs,mcs, A0,DataWire,sINT,mINT,CASC);
+        INTA = 1 ; 
+        sirr= 0;
+        wr<=1 ;
+        mcs <=1;
+        rd <=1;
+        mEn = 1;
+        sEn =0 ;
+
+        //initializing the master
+        #100//send icw1 (no icw3 bas fih icw4 )
+        $display("\n(MASTER)send icw1 with level sensing mode &single mode:");
+        Datain <= 'b00011001;
+        wr<=0 ;
+        mcs <=0;
+        A0 <=0;
+
+        //icw2 for the data vector and will concatenate 01010 with the number of 
+        
+        #100   
+        
+        wr<=1 ;
+        mcs<=1;
+
+        #100
+        $display("\n(MASTER)send icw2(for the data vector and will concatenate 01110 with the number of bit)");
+        wr<=0 ;
+        mcs <=0;
+        A0 <=1;
+        Datain <= 'b01110101;
+
+        #100
+         wr<=1 ;
+        mcs <=1;
+
+        #100
+         $display("\n(MASTER)send icw3");
+        wr<=0 ;
+        mcs <=0;
+        A0 <=1;
+        Datain <= 'b11111111;
+
+         #100
+         wr<=1 ;
+        mcs <=1;
+
+         #100 //icw4 (auto)
+        $display("\n(MASTER)send icw4 with automatic mode:");
+        Datain <= 'b00000010;
+        wr<=0 ;
+        mcs <=0;
+        A0 <=1;
+        
+        #100   
+        wr<=1 ;
+        mcs <=1;
+
+         #100  
+        $display("\n(MASTER)Send ocw1 to set mask :no masking for master)");
+        wr<=0 ;
+        mcs <=0;
+        A0 <=1;
+        Datain <= 'b00000000;
+
+         #100
+         wr<=1 ;
+        mcs <=1;
+
+        //initializing the slave
+        #100//send icw1 (no icw3 bas fih icw4 )
+        $display("\n(SLAVE)send icw1 with level sensing mode &single mode:");
+        Datain <= 'b00011001;
+        wr<=0 ;
+        scs <=0;
+        A0 <=0;
+
+
+        
+        #100   
+        
+        wr<=1 ;
+        scs<=1;
+
+        #100
+        $display("\n(SLAVE)send icw2(for the data vector and will concatenate 01110 with the number of bit)");
+        wr<=0 ;
+        scs <=0;
+        A0 <=1;
+        Datain <= 'b01110101;
+
+        #100
+         wr<=1 ;
+        scs <=1;
+
+
+        #100
+         $display("\n(SLAVE)send icw3");
+        wr<=0 ;
+        scs <=0;
+        A0 <=1;
+        Datain <= 'b00000001;
+
+         #100
+         wr<=1 ;
+        scs <=1;
+
+         #100 //icw4 (auto)
+        $display("\n(SLAVE)send icw4 with automatic mode:");
+        Datain <= 'b00000010;
+        wr<=0 ;
+        scs <=0;
+        A0 <=1;
+        
+        #100   
+        wr<=1 ;
+        scs <=1;
+
+         #100  
+        $display("\n(SLAVE)Send ocw1 to set mask :no masking");
+        wr<=0 ;
+        scs <=0;
+        A0 <=1;
+        Datain <= 'b00000000;
+
+         #100
+         wr<=1 ;
+        scs <=1;
+        
+        #100
+        $display("\n(SLAVE)Interrupt on bit no 1 in slave");
+        sirr <='b00000010;
+
+        #100
+        sirr <='b00000000;
+
+        #100
+         $display("\nImpulse 1 came:");
+        INTA<=0;
+
+        #100
+        INTA<=1;
+
+        #100
+        $display("\nImpulse 2 came: so the vector of service routiene (SLAVE) should be sent as an output");
+        INTA<=0;
+
+        #100
+        INTA<=1;
+
+
+   end
+
+  always @(sINT)begin
+    mirr[1] <= sINT;
+   end
+
+ 
+   PIC master(CASC ,DataWire,rd ,wr,A0,mcs,mEn,INTA,mirr,mINT);
+   PIC slave(CASC ,DataWire,rd ,wr,A0,scs,sEn,INTA,sirr,sINT);   
 
 endmodule
