@@ -1,4 +1,4 @@
-module PIC(/*inout [7:0]Dpic ,***********/inout [2:0]caspic, inout [7:0]D , input RDpic,WRpic,A0pic,CSpic,Enpic,INTApic,[7:0]irrpic  ,output INTpic );
+module PIC(inout [2:0]cas, inout [7:0]D , input rd,wr,A0,cs,En,INTA,[7:0]irr  ,output INT );
 
     wire [7:0]datafromPrToRW ;
     wire Readd,endOfinitPic, intreqFromPrToControl;
@@ -16,20 +16,20 @@ module PIC(/*inout [7:0]Dpic ,***********/inout [2:0]caspic, inout [7:0]D , inpu
     wire [7:0]ICW3wordpic ; 
 
     
-    RWModule RWinst (RDpic ,WRpic,A0pic,CSpic,
+    RWModule RWinst (rd ,wr,A0,cs,
                 datafromPrToRW,D,Readd,datafromRWToControl,
                 ICWSpic,OCWspic,endOfinitPic);
-    ControlLogic CLinst (A0pic,INTApic, intreqFromPrToControl,
+    ControlLogic CLinst (A0,INTA, intreqFromPrToControl,
                     ICWSpic,OCWspic,
-                    datafromRWToControl, imp1pic,imp2pic,endOfimp2pic,INTpic,
+                    datafromRWToControl, imp1pic,imp2pic,endOfimp2pic,INT,
                     AEOIpic,beginOfvectorAdresspic,maskPic,
                     RR_RISpic,R_SL_EOIpic,OCW2isSentpic,endOfimp1pic,
                     SNGLpic,LTIM,ICW3wordpic);
 
-    PR PRinst (endOfinitPic,A0pic,Readd,
-                irrpic,maskPic,R_SL_EOIpic,
+    PR PRinst (endOfinitPic,A0,Readd,
+                irr,maskPic,R_SL_EOIpic,
                 RR_RISpic,imp1pic,imp2pic,endOfimp2pic,endOfimp1pic,
                 OCW2isSentpic,AEOIpic,beginOfvectorAdresspic,intreqFromPrToControl,
-                datafromPrToRW,caspic,Enpic,SNGLpic,LTIM,ICW3wordpic);
+                datafromPrToRW,cas,En,SNGLpic,LTIM,ICW3wordpic);
     
 endmodule
